@@ -1,7 +1,7 @@
 from turing import *
 
 #below are examples of turing machines that attempt
-#to recognize 
+#to recognize  tha language (a^n)(b^n)(c^n)
 #these were originally student's homeworks that I entered
 
 tm = TuringMachine({	
