@@ -107,4 +107,36 @@ repli [] n = []
 repli (x:xs) n = (replicate n x)++(repli xs n)
 
 {-Problem 16-}
+dropEvery:: [a]-> Int -> [a]
+dropEvery [] n = []
+dropEvery x n = drop' x n n
+		where 	drop' [] n count = []
+			drop' (x:xs) n 1 = drop' xs n n
+			drop' (x:xs) n c = x:(drop' xs n (c-1))
 
+{-Problem 17-}
+split:: [a]->Int->([a],[a])
+split x n = (firstPart x n,secondPart x n) where
+		firstPart [] n = []
+		firstPart x 0 = []
+		firstPart (x:xs) n = x:(firstPart xs (n-1))
+		secondPart x n = myreverse $
+				  firstPart (myreverse x) ((myLength x)-n)
+
+{-Problem 18-}
+slice :: [a]->Int->Int->[a]
+slice x a b = snd $ split (fst (split x b)) (a-1)
+
+{-Problem 19-}
+rotate :: [a]->Int->[a]
+rotate list n= b++a where
+		(a,b) = split list (normalize list n) where
+		normalize alist z = z `mod` (length alist)
+
+{-Problem 20-}
+removeAt :: Int->[a] -> (a, [a])
+removeAt n (x:xs) = removeAt' (x:xs) n [] where
+			removeAt' (x:xs) 0 prior = (x, prior++xs)
+			removeAt' (x:xs) n prior = 
+				(fst $ removeAt' xs (n-1) (prior++[x]), 
+				 snd $ removeAt' xs (n-1) (prior++[x]))
