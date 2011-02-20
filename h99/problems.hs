@@ -187,7 +187,7 @@ rnd_permu list = uniq_rnd_select list (length list)
 
 {-Problem 26-}
 combiner :: Int->(a,[a])->[[a]]
-combiner n (x,rem) = map ((++) [x]) (concatMap (combinations (n-1)) rem)
+combiner n (x,rem) = map ((++) [x]) ((combinations (n-1)) rem)
 
 combinations :: Int-> [a] -> [[a]]
 combinations 0 _ = [[]]
