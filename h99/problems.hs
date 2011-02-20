@@ -1,3 +1,6 @@
+import qualified System.Random  as Rnd
+import Control.Monad (replicateM)
+
 {-Problem 1-}
 myLast [] = error "Last element of empty list is undefined"
 myLast (x:[]) = x
@@ -125,13 +128,13 @@ split x n = (firstPart x n,secondPart x n) where
 
 {-Problem 18-}
 slice :: [a]->Int->Int->[a]
-slice x a b = snd $ split (fst (split x b)) (a-1)
+slice x a b = snd $ split (fst $ split x b) (a-1)
 
 {-Problem 19-}
 rotate :: [a]->Int->[a]
 rotate list n= b++a where
 		(a,b) = split list (normalize list n) where
-		normalize alist z = z `mod` (length alist)
+		normalize alist n = n `mod` (length alist)
 
 {-Problem 20-}
 removeAt :: Int->[a] -> (a, [a])
@@ -140,3 +143,69 @@ removeAt n (x:xs) = removeAt' (x:xs) n [] where
 			removeAt' (x:xs) n prior = 
 				(fst $ removeAt' xs (n-1) (prior++[x]), 
 				 snd $ removeAt' xs (n-1) (prior++[x]))
+
+{-Problem 21-}
+insertAt :: a -> [a] -> Int -> [a]
+insertAt x list n = first++[x]++second where
+			sp = split list (n-1)
+			first = fst $ sp
+			second = snd $ sp 
+
+{-Problem 22-}
+--Yeah, we know, [a..b] is the sane way
+--but I'm figuring at least part of this is 
+--doing things yourself.
+range :: Int->Int->[Int]
+range a b = range' a b [] where
+		range' a b acc = if a <= b 
+			 	  then acc++[a]++(range (a+1) b)
+				  else acc
+
+{-Problem 23-}
+random n = do 	rand <- Rnd.randomIO :: (IO Int)
+		return $ rand `mod` n
+
+rnd_select :: [a] -> Int -> IO [a]
+rnd_select list n = replicateM n getOne where
+			 getOne= do  spot <- random (length list)
+			 	     return $ fst $ removeAt spot list
+uniq_rnd_select :: [a] -> Int -> IO [a]
+uniq_rnd_select list 0 = return []
+uniq_rnd_select list n = 
+	do spot <- random $ length list
+	   let (removed, rem) = removeAt spot list
+	   rest <- uniq_rnd_select rem (n-1)
+	   return $ ([removed] ++ rest)
+
+{-Problem 24-}
+diff_select_wrong count max = rnd_select [1..max] count
+diff_select count max = uniq_rnd_select [1..max] count
+
+{-Problem 25-}
+rnd_permu :: [a] -> IO [a]
+rnd_permu list = uniq_rnd_select list (length list)
+
+{-Problem 26-}
+combiner :: Int->(a,[a])->[[a]]
+combiner n (x,rem) = map ((++) [x]) (concatMap (combinations (n-1)) rem)
+
+combinations :: Int-> [a] -> [[a]]
+combinations 0 _ = [[]]
+combinations n list = 
+	   let pick n = removeAt n list in 
+		concatMap (combiner n) $ map pick [0..(length list)-1]
+
+--Combinations 1 [1,2]
+-- -> concatMap (combiner n) $ [(1,[2]),(2,[1])]
+-- -> [(map ((++) 1) (concatMap (combinations 0) [2])),
+--     (map ((++) 2) (concatMap (combinations 0) [1]) ]
+-- -> [(map ((++) 1) (concatMap [[]])
+
+
+--comprehension method goes here
+testpick list = let pick n = removeAt n list 
+		    join (x,list) = [x]++list in
+		 map join $ map pick [0..(length list) -1]
+
+{-Problem 27-}
+
