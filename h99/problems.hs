@@ -187,7 +187,7 @@ rnd_permu list = uniq_rnd_select list (length list)
 
 {-Problem 26-}
 combiner :: Int->(a,[a])->[[a]]
-combiner n (x,rem) = map ((++) [x]) ((combinations (n-1)) rem)
+combiner n (x,rem) = map ((++) [x]) (combinations (n-1) rem)
 
 combinations :: Int-> [a] -> [[a]]
 combinations 0 _ = [[]]
@@ -208,4 +208,6 @@ testpick list = let pick n = removeAt n list
 		 map join $ map pick [0..(length list) -1]
 
 {-Problem 27-}
-
+--group elements (x:[]) = [combinations x elements]
+--group elements (x:xs) = map (combinations x elements
+			
