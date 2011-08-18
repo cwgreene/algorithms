@@ -10,6 +10,9 @@ class Polynomial(dict):
 			self[((n,1),)] = 1
 		constant = 0
 		for monomial in self.keys():
+			if self[monomial]==0:
+				self.pop(monomial)
+				continue
 			exponent = True
 			for var in monomial:
 				if var[0] == '_':
@@ -23,14 +26,14 @@ class Polynomial(dict):
 				self.pop(monomial)
 		if (('_',0),) in self.keys():
 			self[(('_',0),)] += constant
-		else:
+		elif constant != 0:
 			self[(('_',0),)] = constant
 	def __add__(self,p1):
-		return polynomial_add(self,p1)
+		return Polynomial(polynomial_add(self,p1))
 	def __sub__(self,p1):
-		return polynomial_add(self,p1*Polynomial(-1))
+		return Polynomial(polynomial_add(self,p1*Polynomial(-1)))
 	def __mul__(self,p1):
-		return polynomial_multiply(self,p1)
+		return Polynomial(polynomial_multiply(self,p1))
 	def __str__(self):
 		return polynomial_str(self)
 	def __mod__(self,p2):
@@ -55,6 +58,8 @@ class Polynomial(dict):
 			return sorted(keys,reverse=True)[0]
 		return (('_',0),)
 	def __cmp__(self,p2):
+		if not isinstance(p2,Polynomial):
+			return 1
 		k1=sorted(self.keys(),reverse=True)
 		k2=sorted(p2.keys(),reverse=True)
 		k1=map(lambda x: (x,self[x]),k1)
@@ -65,7 +70,10 @@ def pgcd(p1,p2):
 		return p1
 	if p1 < p2:
 		return pgcd(p2,p1)
-	return pgcd(p2,p1%p2)
+	quotient, remainder = polynomial_divide(p1,p2)
+	if quotient.isZero():
+		return Polynomial(1)
+	return pgcd(p2,remainder)
 
 def polynomial_add(p1,p2):
 	p3 = Polynomial({})
@@ -100,6 +108,8 @@ def monomial_multiply(m1,m2):
 	return tuple(sorted(result.items())) #sort is important
 
 def polynomial_multiply(p1,p2):
+	if p1.isZero() or p2.isZero():
+		return Polynomial(0)
 	result = []
 	for m1 in p1:
 		for m2 in p2:
@@ -143,9 +153,20 @@ def monomial_divide(m1,m2):
 		result[var] = hm1[var]-hm2[var]
 	return tuple(sorted(result.items(),reverse=True))
 		
-		
+def poly_scalar_divide(p1,sp):
+	result = Polynomial(0)
+	if sp.isZero():
+		return Polynomial(0)
+	scalar = sp.values()[0]
+	for monomial in p1:
+		result[monomial] = p1[monomial]/scalar
+	return Polynomial(result)
 
 def polynomial_divide(p1,p2):
+	if p2.isScalar():
+		quotient = poly_scalar_divide(p1,p2)
+		remainder = p1-quotient*p2
+		return quotient,remainder
 	leading1 = p1.leading()
 	leading2 = p2.leading()
 	quotient = Polynomial(0)
