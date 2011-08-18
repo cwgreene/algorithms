@@ -6,7 +6,7 @@ __global__ void kernelDoom(int *a)
 {
 	int i = blockIdx.x*blockDim.x+threadIdx.x;
 	/*Branch Version*/
-	for(int k =0; k < 100;k++)
+	for(int k =0; k < 100000;k++)
 	{
 		if(a[i]>=0)
 			a[i] = a[i]+1;
@@ -18,7 +18,7 @@ __global__ void kernelDoom(int *a)
 __global__ void nobranchDoom(int *a)
 {
 	int i = blockIdx.x*blockDim.x+threadIdx.x;
-	for(int k = 0; k < 100;k++)
+	for(int k = 0; k < 100000;k++)
 	a[i] = a[i] + (1+2*((a[i] & -1)>>31));
 }
 
@@ -42,7 +42,7 @@ printf("\n\n");
 
 int main()
 {	
-	int N = 512*512;
+	int N = 1024*1024;
 	printf("starting\n");
 	size_t size = N*sizeof(int);
 	int *o_nums = (int *)malloc(size);
@@ -54,12 +54,13 @@ int main()
 	printf("beginning cuda alloc\n");
 	SAFE_CUDA(cudaMalloc(&nums_d,size));
 	for(int i =0;i< N;i++)
-		o_nums[i] = i*(1-2*(random()%2));
+		o_nums[i] = i*(1-2*(i%2));
 
-	TIME_IT(kerneldoom,(kernelDoom<<<512,512>>>(nums_d)));
+	TIME_IT(kerneldoom,(kernelDoom<<<1024,1024>>>(nums_d)));
 	
-//	TIME_IT(nobranch, (nobranchDoom<<<512,512>>>(nums_d)));
+//	TIME_IT(nobranch, (nobranchDoom<<<1024,1024>>>(nums_d)));
 
+	printf("result: %d\n",nums[1]);
 //	TIME_IT(kerneldoom,(kernelDoom<<<512,512>>>(nums_d)));
 
 
