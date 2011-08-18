@@ -33,6 +33,9 @@ class Polynomial(dict):
 		return polynomial_multiply(self,p1)
 	def __str__(self):
 		return polynomial_str(self)
+	def __mod__(self,p2):
+		quotient,remainder = polynomial_divide(self,p2)
+		return remainder
 	def isOne(self):
 		if self.keys() == [(('_',0),)]:
 			if self[(('_',0),)] == 1:
@@ -43,7 +46,7 @@ class Polynomial(dict):
 			return True
 		return False
 	def isZero(self):
-		if self.key() == []:
+		if self.keys() == []:
 			return True
 		return False
 	def leading(self):
@@ -108,9 +111,10 @@ def polynomial_str(p1):
 	result = []
 	if p1.keys()==[]:
 		return "0"
-	for monomial in sorted(p1.keys()):
+	for monomial in sorted(p1.keys(),reverse=True):
 		if monomial[0][0] == '_':
-			result.append(str(p1[monomial]))
+			if p1[monomial] != 0:
+				result.append(str(p1[monomial]))
 			continue
 		m_str = monomial_str(monomial)
 		if p1[monomial] != 1:
@@ -120,14 +124,11 @@ def polynomial_str(p1):
 
 def monomial_divide(m1,m2):
 	result = []
-	print m1
 	hm1 = dict(m1)
 	hm2 = dict(m2)
 	result = {}
-	print "monomial dicts:",hm1,hm2
 	for var in hm2:
 		if var not in hm2 or (var not in hm1) or hm2[var] > hm1[var]:
-			print var not in hm2
 			return 0
 		result[var] = hm1[var]-hm2[var]
 	return tuple(sorted(result.items(),reverse=True))
@@ -140,8 +141,7 @@ def polynomial_divide(p1,p2):
 	quotient = Polynomial(0)
 	remainder = Polynomial(p1)
 	quotient_term=monomial_divide(leading1,leading2)
-	if quotient_term != 0 and remainder.isZero != 0:
-		print "rem",remainder
+	while quotient_term != 0 and remainder.isZero() != True:
 		quotient_coef = remainder[leading1]/p2[leading2]
 		quotient2 = Polynomial({quotient_term: quotient_coef})
 
@@ -156,5 +156,5 @@ if __name__ =="__main__":
 	while True:
 		print "1?",
 		p1 = eval(raw_input())
-		print map(str,p1)
+		print p1
 
