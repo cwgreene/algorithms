@@ -105,7 +105,7 @@ def monomial_multiply(m1,m2):
 			result[var] = hm2[var]
 	if result.keys() == []:
 		return (('_',0),)
-	return tuple(sorted(result.items())) #sort is important
+	return tuple(sorted(result.items(),reverse=True)) #sort is important
 
 def polynomial_multiply(p1,p2):
 	if p1.isZero() or p2.isZero():
@@ -151,6 +151,9 @@ def monomial_divide(m1,m2):
 		if var not in hm2 or (var not in hm1) or hm2[var] > hm1[var]:
 			return 0
 		result[var] = hm1[var]-hm2[var]
+	for var in hm1:
+		if var not in hm2:
+			result[var] = hm1[var]
 	return tuple(sorted(result.items(),reverse=True))
 		
 def poly_scalar_divide(p1,sp):
@@ -179,6 +182,8 @@ def polynomial_divide(p1,p2):
 		quotient= quotient + quotient2
 		remainder = remainder - quotient2*p2
 		leading1 = remainder.leading()
+		print "rem",remainder,quotient2*p2,"(",p2,")",quotient2,\
+				quotient_term
 		quotient_term =monomial_divide(leading1,leading2)
 
 	return quotient,remainder

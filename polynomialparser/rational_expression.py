@@ -1,13 +1,14 @@
-from polynomial import Polynomial
+from polynomial import Polynomial,pgcd,polynomial_divide
 
 class RationalExpression(object):
 	def __init__(self,p1,p2=None):
 		if not isinstance(p1,Polynomial):
 			raise "Scream and yell"
-		self.numerator = p1
 		if p2==None:
 			p2 = Polynomial(1)
-		self.denominator = p2
+		common = pgcd(p1,p2)
+		self.numerator=polynomial_divide(p1,common)[0]
+		self.denominator=polynomial_divide(p2,common)[0]
 	def __mul__(self,e2):
 		return RationalExpression(self.numerator*e2.numerator,
 					  self.denominator*e2.denominator)

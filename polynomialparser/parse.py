@@ -1,6 +1,6 @@
 import re
-#from polynomial import Polynomial
-#from rational_expression import RationalExpression
+from polynomial import Polynomial
+from rational_expression import RationalExpression
 
 def try_match(pattern,target,success_token,token_list):
 	match = re.match(pattern,target)
@@ -154,9 +154,9 @@ while True:
 		parsed = parse(input)
 		tree = ast_expr(parsed)
 		print lisp_tree_str(tree[0])
-#		poly_tree = polynomial_tree(tree[0])
+		poly_tree = polynomial_tree(tree[0])
 		#print poly_tree
-#		print reduce_poly(poly_tree)[1]
+		print reduce_poly(poly_tree)[1]
 
 	except EOFError:
 		break
