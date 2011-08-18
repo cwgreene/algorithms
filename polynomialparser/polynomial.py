@@ -8,6 +8,23 @@ class Polynomial(dict):
 			self[(('_',0),)] = n
 		elif type(n) == type(""):
 			self[((n,1),)] = 1
+		constant = 0
+		for monomial in self.keys():
+			exponent = True
+			for var in monomial:
+				if var[0] == '_':
+					exponent = False
+					break
+				if var[1] != 0:
+					exponent = False
+					break
+			if exponent:
+				self.pop(monomial)
+				constant += self[monomial]
+		if (('_',0),) in self.keys():
+			self[(('_',0),)] += constant
+		else:
+			self[(('_',0),)] = constant
 	def __add__(self,p1):
 		return polynomial_add(self,p1)
 	def __sub__(self,p1):
@@ -29,6 +46,9 @@ class Polynomial(dict):
 		if self.key() == []:
 			return True
 		return False
+	def leading(self):
+		return sorted(self.keys(),reverse=True)[0]
+
 	
 
 def polynomial_add(p1,p2):
@@ -97,23 +117,41 @@ def polynomial_str(p1):
 
 def monomial_divide(m1,m2):
 	result = []
-	for var in m1:
-		pass
+	print m1
+	hm1 = dict(m1)
+	hm2 = dict(m2)
+	result = {}
+	print "monomial dicts:",hm1,hm2
+	for var in hm2:
+		if var not in hm2 or hm2[var] > hm1[var]:
+			print var not in hm2
+			return 0
+		result[var] = hm1[var]-hm2[var]
+	return tuple(sorted(result.items(),reverse=True))
+		
+		
 
 def polynomial_divide(p1,p2):
-	leading1 = sorted(p1.keys())[0]
-	leading2 = sorted(p2.keys())[0]
-	divisor=monomial_divide(leading1,leading2)
-	if divisor != 0:
-		pass
+	leading1 = p1.leading()
+	leading2 = p2.leading()
+	quotient = Polynomial(0)
+	remainder = Polynomial(p1)
+	quotient_term=monomial_divide(leading1,leading2)
+	if quotient_term != 0 and remainder.isZero != 0:
+		print remainder
+		quotient_coef = remainder[leading1]/p2[leading2]
+		quotient2 = Polynomial({quotient_term: quotient_coef})
+
+		quotient= quotient + quotient2
+		remainder = remainder - quotient2*p2
+		leading1 = remainder.leading()
+		quotient_term =monomial_divide(leading1,leading2)
+
+	return quotient,remainder
 
 if __name__ =="__main__":	
 	while True:
 		print "1?",
 		p1 = eval(raw_input())
-		print p1
-		print "2?",
-		p2 = eval(raw_input())
-		print p2
-		print p1*p2
+		print map(str,p1)
 
