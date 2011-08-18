@@ -16,6 +16,19 @@ class Polynomial(dict):
 		return polynomial_multiply(self,p1)
 	def __str__(self):
 		return polynomial_str(self)
+	def isOne(self):
+		if self.keys() == [(('_',0),)]:
+			if self[(('_',0),)] == 1:
+				return True
+		return False
+	def isScalar(self):
+		if self.keys() == [(('_',0),)]:
+			return True
+		return False
+	def isZero(self):
+		if self.key() == []:
+			return True
+		return False
 	
 
 def polynomial_add(p1,p2):

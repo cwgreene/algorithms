@@ -1,5 +1,6 @@
 import re
 from polynomial import Polynomial
+from rational_expression import RationalExpression
 
 def try_match(pattern,target,success_token,token_list):
 	match = re.match(pattern,target)
@@ -124,9 +125,9 @@ def polynomial_tree(tree):
 	#at a node
 	token = tree
 	if tok_type(token) == "NUMBER":
-		return ("POLYNOMIAL",Polynomial(int(tok_val(token))))
+		return ("POLYNOMIAL",RationalExpression(Polynomial(int(tok_val(token)))))
 	if tok_type(token) == "SYMBOL":
-		return ("POLYNOMIAL",Polynomial(tok_val(token)))
+		return ("POLYNOMIAL",RationalExpression(Polynomial(tok_val(token))))
 	return tree
 
 def reduce_poly(poly_tree):
@@ -141,6 +142,8 @@ def reduce_poly(poly_tree):
 			return ("POLYNOMIAL",left[1]*right[1])
 		elif operator == '-':
 			return ("POLYNOMIAL",left[1]-right[1])
+		elif operator == '/':#polynomial is a lie
+			return ("POLYNOMIAL",left[1]/right[1])
 	else:
 		return ("POLYNOMIAL",poly_tree[1])
 
