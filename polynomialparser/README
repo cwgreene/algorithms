@@ -1,0 +1,4 @@
+parse.py parses command line 
+No error checking is currently performed. If I'm lucky,
+it'll not do anything.
+polynomial.py contains the polynomial object and functions.
