@@ -14,6 +14,8 @@ class Polynomial(dict):
 				self.pop(monomial)
 				continue
 			exponent = True
+			m = normalized_monomial(monomial)
+			value = self.pop(monomial)
 			for var in monomial:
 				if var[0] == '_':
 					exponent = False
@@ -22,8 +24,9 @@ class Polynomial(dict):
 					exponent = False
 					break
 			if exponent:
-				constant += self[monomial]
-				self.pop(monomial)
+				constant +=value
+			else:
+				self[m] = value
 		if (('_',0),) in self.keys():
 			self[(('_',0),)] += constant
 		elif constant != 0:
@@ -65,6 +68,14 @@ class Polynomial(dict):
 		k1=map(lambda x: (x,self[x]),k1)
 		k2=map(lambda x: (x,p2[x]),k2)
 		return cmp(k1,k2)
+
+def normalized_monomial(m):
+	result = []
+	for var in m:
+		if var[1] != 0 or var[0]=="_":
+			result.append(var)
+	return tuple(result)
+
 def pgcd(p1,p2):
 	if p2.isZero():
 		return p1
@@ -129,7 +140,7 @@ def monomial_str(m1):
 
 def polynomial_str(p1):
 	result = []
-	if p1.keys()==[]:
+	if p1.isZero()==[]:
 		return "0"
 	for monomial in sorted(p1.keys(),reverse=True):
 		if monomial[0][0] == '_':
@@ -182,8 +193,6 @@ def polynomial_divide(p1,p2):
 		quotient= quotient + quotient2
 		remainder = remainder - quotient2*p2
 		leading1 = remainder.leading()
-		print "rem",remainder,quotient2*p2,"(",p2,")",quotient2,\
-				quotient_term
 		quotient_term =monomial_divide(leading1,leading2)
 
 	return quotient,remainder
