@@ -2,3 +2,11 @@ parse.py parses command line
 No error checking is currently performed. If I'm lucky,
 it'll not do anything.
 polynomial.py contains the polynomial object and functions.
+
+Grammar Accepted by parse:
+
+	expr-> expr,"+",term | expr,"-",term
+	expr-> term
+	term-> atom | term,"*",atom | term ,"/",atom
+	atom-> group | NUMBER | SYMBOL
+	group-> START_GROUP,expr,END_GROUP
