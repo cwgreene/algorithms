@@ -54,8 +54,18 @@ class Polynomial(dict):
 		if keys:
 			return sorted(keys,reverse=True)[0]
 		return (('_',0),)
-
-	
+	def __cmp__(self,p2):
+		k1=sorted(self.keys(),reverse=True)
+		k2=sorted(p2.keys(),reverse=True)
+		k1=map(lambda x: (x,self[x]),k1)
+		k2=map(lambda x: (x,p2[x]),k2)
+		return cmp(k1,k2)
+def pgcd(p1,p2):
+	if p2.isZero():
+		return p1
+	if p1 < p2:
+		return pgcd(p2,p1)
+	return pgcd(p2,p1%p2)
 
 def polynomial_add(p1,p2):
 	p3 = Polynomial({})
