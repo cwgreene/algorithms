@@ -19,8 +19,8 @@ class Polynomial(dict):
 					exponent = False
 					break
 			if exponent:
-				self.pop(monomial)
 				constant += self[monomial]
+				self.pop(monomial)
 		if (('_',0),) in self.keys():
 			self[(('_',0),)] += constant
 		else:
@@ -47,7 +47,10 @@ class Polynomial(dict):
 			return True
 		return False
 	def leading(self):
-		return sorted(self.keys(),reverse=True)[0]
+		keys = self.keys()
+		if keys:
+			return sorted(keys,reverse=True)[0]
+		return (('_',0),)
 
 	
 
@@ -123,7 +126,7 @@ def monomial_divide(m1,m2):
 	result = {}
 	print "monomial dicts:",hm1,hm2
 	for var in hm2:
-		if var not in hm2 or hm2[var] > hm1[var]:
+		if var not in hm2 or (var not in hm1) or hm2[var] > hm1[var]:
 			print var not in hm2
 			return 0
 		result[var] = hm1[var]-hm2[var]
@@ -138,7 +141,7 @@ def polynomial_divide(p1,p2):
 	remainder = Polynomial(p1)
 	quotient_term=monomial_divide(leading1,leading2)
 	if quotient_term != 0 and remainder.isZero != 0:
-		print remainder
+		print "rem",remainder
 		quotient_coef = remainder[leading1]/p2[leading2]
 		quotient2 = Polynomial({quotient_term: quotient_coef})
 
