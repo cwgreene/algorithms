@@ -43,43 +43,67 @@ class Polynomial(dict):
 		quotient,remainder = polynomial_divide(self,p2)
 		return remainder
 
-	def lisp_str(self,list=None):
-		result = ""
+	def lisp_str(self,list=None): #this is way uglier than it should be
 		def lisp_monomial(m):
 			def lisp_var(v):
+				#x^3 -> (* (* x x) x)
 				result = ""
 				var_name,var_count = v[0],v[1]
+				#scalars are special
 				if var_name == "_":
 					return ""
+				#if were at the end, just print var name
 				if var_count == 1:
 					return var_name
+				#otherwise, spit out, and recurse down
+				#with reduced exponent
 				result += ("(* "+var_name+" "+
 						lisp_var((var_name,var_count-1))
 						+")")
 				return result
+			#this case shouldn't happen
 			if len(m) == 0:
 				return "" 
+			#if we have only one variable name, 
+			#we just spit out that variable raised to the exponent
 			if len(m) == 1:
 				return lisp_var(m[0])
+			#otherwise, we need to chain multiplication
+			#each variable xzy^2->(* x (* z (* y y)))
 			else:
 				return ("(* "+lisp_var(m[0])+" "+
 						lisp_monomial(m[1:])+")")
+		#first step: get all monomials
 		if list == None:
 			list = self.keys()
-		if len(list) == 0:
-			return "0"
+			if len(list) == 0:
+				return "0"
+		#handle base case
 		if len(list) == 1:
+			#scalars are special
 			if list[0][0][0] == "_":
 				return str(self[list[0]])
+			#(* 1 x) should be written simply as x
 			if self[list[0]] == 1:
 				return lisp_monomial(list[0])
+			#okay, handle it otherwise
 			else:
-				return ("(* "+str(self[list[0]])+" "+
-						lisp_monomial(list[0])+")")
+				return ("(* "+str(self[list[0]])+ " "+
+					lisp_monomial(list[0])+")")
 		else:
-			return ("(+ "+lisp_monomial(list[0])+" "+
+			#scalars are special
+			if list[0][0][0] == "_":
+				return("(+ "+str(self[list[0]])+" "+
+						self.lisp_str(list[1:])+") ") 
+			#again, leading coefficients of one are ignored
+			if self[list[0]] == 1:
+				return ("(+ "+lisp_monomial(list[0])+" "+
 					self.lisp_str(list[1:])+")")
-		return result
+			#normal case 2*x->(* 2 x)
+			else:
+				return ("(+ "+"(* "+str(self[list[0]])+" "+
+						lisp_monomial(list[0])+") "+
+						self.lisp_str(list[1:])+") ")
 	def isOne(self):
 		if self.keys() == [(('_',0),)]:
 			if self[(('_',0),)] == 1:
