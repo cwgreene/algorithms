@@ -169,10 +169,12 @@ def main(options,args):
 		return
 	input_file = sys.stdin
 	if options.filename:
-		input_file = open(filename)
+		input_file = open(options.filename)
 	while True:
 		try:		
 			input = input_file.readline().strip()
+			if input == "":
+				break
 			eval_expression(input,options.eval,destination)
 			
 		except EOFError:
