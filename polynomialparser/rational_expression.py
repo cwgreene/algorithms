@@ -41,3 +41,8 @@ class RationalExpression(object):
 		else:
 			result += "("+str(self.denominator)+")"
 		return result
+	def lisp_str(self):
+		if self.denominator.isOne():
+			return self.numerator.lisp_str()
+		return ("(/ "+self.numerator.lisp_str()+" "+
+				self.denominator.lisp_str())+")"

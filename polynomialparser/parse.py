@@ -1,4 +1,7 @@
 import re
+import sys
+import options
+
 from polynomial import Polynomial
 from rational_expression import RationalExpression
 
@@ -147,17 +150,33 @@ def reduce_poly(poly_tree):
 	else:
 		return ("POLYNOMIAL",poly_tree[1])
 
-input = ""
-while True:
-	try:
-		input = raw_input()
-		parsed = parse(input)
-		tree = ast_expr(parsed)
-		print lisp_tree_str(tree[0])
+def eval_expression(expression,eval,destination):
+	parsed = parse(expression)
+	tree = ast_expr(parsed)
+	result = ""
+	if eval:
 		poly_tree = polynomial_tree(tree[0])
-		#print poly_tree
-		print reduce_poly(poly_tree)[1]
+		poly = reduce_poly(poly_tree)
+		result = poly[1].lisp_str()
+	else:
+		result = lisp_tree_str(tree[0])
+	print>>destination,result
 
-	except EOFError:
-		break
-
+def main(options,args):
+	destination = sys.stdout
+	if options.expression != None:
+		eval_expression(options.expression,options.eval,destination)
+		return
+	input_file = sys.stdin
+	if options.filename:
+		input_file = open(filename)
+	while True:
+		try:		
+			input = input_file.readline().strip()
+			eval_expression(input)
+			
+		except EOFError:
+			break
+if __name__=="__main__":
+	options,args = options.parse_options(sys.argv)
+	main(options,args)

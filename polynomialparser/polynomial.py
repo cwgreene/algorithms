@@ -42,6 +42,44 @@ class Polynomial(dict):
 	def __mod__(self,p2):
 		quotient,remainder = polynomial_divide(self,p2)
 		return remainder
+
+	def lisp_str(self,list=None):
+		result = ""
+		def lisp_monomial(m):
+			def lisp_var(v):
+				result = ""
+				var_name,var_count = v[0],v[1]
+				if var_name == "_":
+					return ""
+				if var_count == 1:
+					return var_name
+				result += ("(* "+var_name+" "+
+						lisp_var((var_name,var_count-1))
+						+")")
+				return result
+			if len(m) == 0:
+				return "" 
+			if len(m) == 1:
+				return lisp_var(m[0])
+			else:
+				return ("(* "+lisp_var(m[0])+" "+
+						lisp_monomial(m[1:])+")")
+		if list == None:
+			list = self.keys()
+		if len(list) == 0:
+			return "0"
+		if len(list) == 1:
+			if list[0][0] == "_":
+				return str(list[0][1])
+			if self[list[0]] == 1:
+				return lisp_monomial(list[0])
+			else:
+				return ("(* "+str(self[list[0]])+" "+
+						lisp_monomial(list[0])+")")
+		else:
+			return ("(+ "+lisp_monomial(list[0])+" "+
+					self.lisp_str(list[1:])+")")
+		return result
 	def isOne(self):
 		if self.keys() == [(('_',0),)]:
 			if self[(('_',0),)] == 1:
