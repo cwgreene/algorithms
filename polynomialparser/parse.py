@@ -173,7 +173,7 @@ def main(options,args):
 	while True:
 		try:		
 			input = input_file.readline().strip()
-			eval_expression(input)
+			eval_expression(input,options.eval,destination)
 			
 		except EOFError:
 			break

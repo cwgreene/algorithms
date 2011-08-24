@@ -69,8 +69,8 @@ class Polynomial(dict):
 		if len(list) == 0:
 			return "0"
 		if len(list) == 1:
-			if list[0][0] == "_":
-				return str(list[0][1])
+			if list[0][0][0] == "_":
+				return str(self[list[0]])
 			if self[list[0]] == 1:
 				return lisp_monomial(list[0])
 			else:
