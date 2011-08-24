@@ -1,7 +1,16 @@
-parse.py parses command line 
-No error checking is currently performed. If I'm lucky,
-it'll not do anything.
+Usage: python parse.py -h
+
+An expression can be given directly with
+	python -x "1+1"
+An input file may be specified with
+	python -f filename
+Evaluation may be triggered with
+	python -e
+
+parse.py parses command line, is the main file.
+No error checking is currently performed. If I'm lucky, it'll not do anything.
 polynomial.py contains the polynomial object and functions.
+rational_expression.py allows for polynomial division.
 
 Grammar Accepted by parse:
 
