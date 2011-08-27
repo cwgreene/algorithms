@@ -248,7 +248,9 @@ def polynomial_divide(p1,p2):
 	quotient = Polynomial(0)
 	remainder = Polynomial(p1)
 	quotient_term=monomial_divide(leading1,leading2)
-	while quotient_term != 0 and remainder.isZero() != True:
+	quotient2 = Polynomial(1)
+	while (quotient2.isZero() != True 
+		and remainder.isZero() != True):
 		quotient_coef = remainder[leading1]/p2[leading2]
 		quotient2 = Polynomial({quotient_term: quotient_coef})
 
@@ -256,7 +258,6 @@ def polynomial_divide(p1,p2):
 		remainder = remainder - quotient2*p2
 		leading1 = remainder.leading()
 		quotient_term =monomial_divide(leading1,leading2)
-
 	return quotient,remainder
 
 if __name__ =="__main__":	
