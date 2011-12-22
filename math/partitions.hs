@@ -1,15 +1,15 @@
 import System( getArgs )
 
-increment (p1:[]) = [[p1+1]]
-increment (p1:(p2:ps))
+increment (p1:[]) = [[p1+1]]    --Increment if singleton
+increment (p1:(p2:ps))          --Increment if the second is greater than the first
     | p1<p2 = [(p1+1):(p2:ps)]
-increment p = []
+increment p = []                --Don't create a new one, there will be only one succssor
 
-p_exp p = [([1]++p)] ++ (increment p)
+partition_successor p = [([1]++p)] ++ (increment p)    --Insert 1 to partition, and maybe also increment
 
 partitions :: Num a=>Ord a => a -> [[a]]
 partitions 0 = [[]]
-partitions n = concat $ map p_exp (partitions (n-1))
+partitions n = concat $ map partition_successor (partitions (n-1))
 
 main = do 
         args <- getArgs
