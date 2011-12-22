@@ -2,3 +2,5 @@
 *.class
 *.exe
 *~
+*.o
+*.hi
