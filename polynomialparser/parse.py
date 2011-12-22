@@ -11,7 +11,6 @@ def try_match(pattern,target,success_token,token_list):
 		token_list.append((success_token,match.group()))
 		return target[match.end():]
 	return target
-		
 
 def parse(string):
 	token_list = []
@@ -66,8 +65,6 @@ def ast_term(token_list):
 			atom,rem = ast_atom(rem[1:])
 			term = [operator,[term,atom]]
 		return term,rem
-		
-	
 
 def ast_expr(token_list):
 	"""
@@ -150,16 +147,22 @@ def reduce_poly(poly_tree):
 	else:
 		return ("POLYNOMIAL",poly_tree[1])
 
-def eval_expression(expression,eval,destination):
+def eval_expression(expression,eval,destination,options):
 	parsed = parse(expression)
 	tree = ast_expr(parsed)
 	result = ""
 	if eval:
 		poly_tree = polynomial_tree(tree[0])
 		poly = reduce_poly(poly_tree)
-		result = poly[1].lisp_str()
+		if options.lisp:
+		    result = poly[1].lisp_str()
+		else:
+			result = poly[1]
 	else:
-		result = lisp_tree_str(tree[0])
+ 		if options.lisp:
+		    result = lisp_tree_str(tree[0])
+		else:
+			result = tree[0]
 	print>>destination,result
 
 def main(options,args):
@@ -175,7 +178,7 @@ def main(options,args):
 			input = input_file.readline().strip()
 			if input == "":
 				break
-			eval_expression(input,options.eval,destination)
+			eval_expression(input,options.eval,destination,options)
 			
 		except EOFError:
 			break
