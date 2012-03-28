@@ -46,3 +46,7 @@ class RationalExpression(object):
 			return self.numerator.lisp_str()
 		return ("(/ "+self.numerator.lisp_str()+" "+
 				self.denominator.lisp_str())+")"
+	def scalar(self):
+		return self.numerator[(("_",0),)]/self.denominator[(("_",0),)]
+	def isScalar(self):
+		return self.numerator.isScalar() and self.denominator.isScalar()
