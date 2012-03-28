@@ -110,7 +110,7 @@ class Polynomial(dict):
 				return True
 		return False
 	def isScalar(self):
-		if self.keys() == [(('_',0),)]:
+		if self.keys() == [(('_',0),)] or self.isZero():
 			return True
 		return False
 	def isZero(self):
@@ -204,17 +204,27 @@ def polynomial_str(p1):
 	result = []
 	if p1.isZero()==[]:
 		return "0"
-	for monomial in sorted(p1.keys(),reverse=True):
+	monomials = sorted(p1.keys(),reverse=True)
+	for monomial in monomials:
 		if monomial[0][0] == '_':
 			if p1[monomial] != 0:
 				result.append(str(p1[monomial]))
 			continue
 		m_str = monomial_str(monomial)
 		if p1[monomial] != 1:
-			m_str = str(p1[monomial])+"*"+m_str
+			if p1[monomial] == -1:
+				m_str = "-"+m_str
+			else:
+				m_str = str(p1[monomial])+"*"+m_str
 		result.append(m_str)
-	return "+".join(result)
-
+	res_str = result[0]
+	for m_str in result[1:]:
+		if m_str[0] == "-":
+			res_str += m_str
+			continue
+		res_str += "+"+m_str
+	return res_str
+	
 def monomial_divide(m1,m2):
 	result = []
 	hm1 = dict(m1)

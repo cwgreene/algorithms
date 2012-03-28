@@ -1,6 +1,7 @@
 import re
 import sys
 import options
+import readline
 
 from polynomial import Polynomial
 from rational_expression import RationalExpression
@@ -22,7 +23,7 @@ def parse(string):
 		remaining = remaining.strip() #kill space
 		remaining = try_match("^[0-9]+",remaining,
 				"NUMBER",token_list)
-		remaining = try_match("^[\+\-\*\/]",remaining,
+		remaining = try_match("^[\+\-\*\/\^]",remaining,
 				"OPERATOR",token_list)
 		remaining = try_match("^[a-zA-Z]",remaining,
 				"SYMBOL",token_list)
@@ -60,7 +61,7 @@ def ast_term(token_list):
 			return term,rem
 		if tok_val(rem[0]) in "+-)":#end of term
 			return term,rem
-		while rem != [] and tok_val(rem[0]) in "*/":
+		while rem != [] and tok_val(rem[0]) in "*/^":
 			operator = rem[0]
 			atom,rem = ast_atom(rem[1:])
 			term = [operator,[term,atom]]
@@ -70,7 +71,7 @@ def ast_expr(token_list):
 	"""
 	expr-> expr,"+",term | expr,"-",term
 	expr-> term
-	term-> atom | term,"*",atom | term ,"/",atom
+	term-> atom | term,"*",atom | term ,"/",atom | term ,"^", atom
 	atom-> group | NUMBER | SYMBOL
 	group-> START_GROUP,expr,END_GROUP
 	"""
@@ -135,7 +136,7 @@ def reduce_poly(poly_tree):
 		head = poly_tree[0]
 		operator = head[1]
 		left = reduce_poly(poly_tree[1][0])
-		right = reduce_poly(poly_tree[1][1])
+		right = reduce_poly(poly_tree[1][1]) # This means that right is always RE
 		if operator == '+':
 			return ("POLYNOMIAL",left[1]+right[1])
 		elif operator == '*':
@@ -144,6 +145,14 @@ def reduce_poly(poly_tree):
 			return ("POLYNOMIAL",left[1]-right[1])
 		elif operator == '/':#polynomial is a lie
 			return ("POLYNOMIAL",left[1]/right[1])
+		elif operator == '^':
+			if not right[1].isScalar():
+				raise Exception("Only Integer Exponents supported")
+			repeat = right[1].scalar()
+			acc = RationalExpression(Polynomial(1))
+			for i in range(repeat):
+				acc = acc*left[1]
+			return ("POLYNOMIAL", acc)
 	else:
 		return ("POLYNOMIAL",poly_tree[1])
 
@@ -165,14 +174,19 @@ def eval_expression(expression,eval,destination,options):
 			result = tree[0]
 	print>>destination,result
 
+class ReadlineWrap(object):
+    def readline(self):
+        return raw_input()
+
 def main(options,args):
 	destination = sys.stdout
 	if options.expression != None:
 		eval_expression(options.expression,options.eval,destination)
 		return
-	input_file = sys.stdin
 	if options.filename:
 		input_file = open(options.filename)
+	else:
+		input_file = ReadlineWrap()
 	while True:
 		try:		
 			input = input_file.readline().strip()
